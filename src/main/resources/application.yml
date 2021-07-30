@@ -1,0 +1,107 @@
+server:
+  port: 10102
+  undertow:
+    direct-buffers: true
+    buffer-size: 1024
+  http2:
+    enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    shutdown:
+      enabled: true
+    health:
+      show-details: always
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  cache:
+    type: caffeine
+    cache-names: platforms, stores
+    caffeine:
+      spec: initialCapacity=50,maximumSize=500,expireAfterWrite=60s
+  cloud:
+    consul:
+      discovery:
+        prefer-ip-address: true
+        tags: version=@project.version@
+        instance-id: ${spring.application.name}:${server.port}:${spring.cloud.client.ip-address}
+  main:
+    allow-bean-definition-overriding: true
+  jmx:
+    enabled: true
+  pid:
+    file: ${spring.application.name}.pid
+  sqltoy:
+    default-data-source: classpath:sql
+    debug: true
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  flyway:
+    enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/omcdb
+    username: omcuser
+    password: 'Winner@2020'
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      client-id: ${spring.application.name}
+      retries: 3
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+omni:
+  platforms:
+  - code: taobao
+    http-url: http://39.103.196.31:30000/tb
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  flyway:
+    enabled: true
+  datasource:
+    url: jdbc:postgresql://pgm-wz957xzwx36ibjl7168240.pg.rds.aliyuncs.com:1921/omcdb
+    username: omcuser
+    password: 'Winner@2020'
+    hikari:
+      maximum-pool-size: 20
+  redis:
+    host: 192.168.217.142
+    password: 'Winner@2020'
+    database: 1
+  kafka:
+    bootstrap-servers: 192.168.206.91:9092,192.168.206.92:9092,192.168.206.93:9092
+    producer:
+      client-id: ${spring.application.name}
+      retries: 3
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: ${spring.application.name}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+omni:
+  platforms:
+  - code: taobao
+    http-url: http://39.103.196.31:30000/tb
+---
+spring:
+  config:
+    activate:
+      on-profile: log-file
+logging:
+  file:
+    path: .
+  logback:
+    rollingpolicy:
+      clean-history-on-start: true
+  pattern:
+    file: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"

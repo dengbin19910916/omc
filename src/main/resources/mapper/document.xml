@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="io.xxx.omni.oms.model.DocumentMapper">
+    <!--<select id="upsertAll" parameterType="list" useGeneratedKeys="true" keyProperty="id" resultType="io.xxx.omni.oms.model.Document">-->
+    <select id="upsertAll" parameterType="list" resultType="io.xxx.omni.oms.model.Document">
+        insert into document(sid, sn, rsn, data, modified, poll_created, poll_modified) values
+        <foreach collection="list" item="it" separator=",">
+            (#{it.sid}, #{it.sn}, #{it.rsn}, #{it.data,typeHandler=io.xxx.omni.oms.util.JSONTypeHandler},
+            #{it.modified}, current_timestamp, current_timestamp)
+        </foreach>
+        on conflict (sid, sn) do update
+        set data = excluded.data, modified = excluded.modified, poll_modified = current_timestamp
+        where excluded.modified > document.modified
+        returning *
+    </select>
+</mapper>

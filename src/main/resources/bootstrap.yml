@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: omc
+  profiles:
+    active: dev
+  cloud:
+    consul:
+      config:
+        format: yaml
+        default-context: omc
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  cloud:
+    consul:
+      host: 192.168.206.83
