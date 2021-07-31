@@ -23,6 +23,16 @@ spring:
     cache-names: platforms, stores
     caffeine:
       spec: initialCapacity=50,maximumSize=500,expireAfterWrite=60s
+  kafka:
+    producer:
+      client-id: ${spring.application.name}
+      retries: 3
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: ${spring.application.name}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   cloud:
     consul:
       discovery:
@@ -51,11 +61,6 @@ spring:
     password: 'Winner@2020'
   kafka:
     bootstrap-servers: localhost:9092
-    producer:
-      client-id: ${spring.application.name}
-      retries: 3
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 omni:
   platforms:
   - code: taobao
@@ -79,15 +84,6 @@ spring:
     database: 1
   kafka:
     bootstrap-servers: 192.168.206.91:9092,192.168.206.92:9092,192.168.206.93:9092
-    producer:
-      client-id: ${spring.application.name}
-      retries: 3
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    consumer:
-      group-id: ${spring.application.name}
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 omni:
   platforms:
   - code: taobao
