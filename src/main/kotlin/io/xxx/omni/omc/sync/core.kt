@@ -237,13 +237,13 @@ abstract class Porter {
     protected open val delay: Duration = Duration.ZERO
 
     /**
-     * 使用不同的参数多次调用接口
-     * @return 第一个参数为扩展参数，第二个参数为并行标志
+     * 申请可继续操作的资源，ex：进行限流等操作
      */
     protected open fun acquire() {}
 
     /**
-     * 申请可继续操作的资源，ex：进行限流等操作
+     * 使用不同的参数多次调用接口
+     * @return 第一个参数为扩展参数，第二个参数为并行标志
      */
     protected open fun getParameters(): Pair<List<Any?>, Boolean/*是否可以并行处理*/> = listOf(null) to false
 
