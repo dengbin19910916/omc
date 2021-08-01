@@ -3,7 +3,7 @@ package io.xxx.omni.omc.model
 import java.time.LocalDateTime
 
 /**
- * 平台（外部）
+ * 平台
  */
 data class Platform(
     var id: String,
@@ -12,7 +12,7 @@ data class Platform(
 )
 
 /**
- * 店铺（外部）
+ * 店铺
  */
 data class Store(
     var id: String,
