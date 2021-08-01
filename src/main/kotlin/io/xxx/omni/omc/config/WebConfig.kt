@@ -15,7 +15,6 @@ import org.springframework.http.client.OkHttp3ClientHttpRequestFactory
 import org.springframework.web.client.RestTemplate
 import java.time.Duration
 
-
 @Configuration
 class WebConfig {
 

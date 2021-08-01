@@ -99,7 +99,7 @@ class Synchronizer : ApplicationRunner {
         val platforms = platformService.getAll()
         for (platform in platforms) {
             if (!platform.enabled!!) continue
-            val stores = storeService.getAll(platform.id, true)
+            val stores = storeService.getAll(platform.id!!)
             for (store in stores) {
                 if (!store.enabled!!) continue
                 val pjWrapper = KtQueryWrapper(PlatformJob::class.java)

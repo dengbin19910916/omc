@@ -38,7 +38,7 @@ class StoreService {
     private lateinit var client: StoreClient
 
     @Cacheable
-    fun getAll(pid: String? = null, enabled: Boolean = true): List<Store> {
+    fun getAll(pid: String, enabled: Boolean = true): List<Store> {
         return client.getAll(pid, enabled)
     }
 
