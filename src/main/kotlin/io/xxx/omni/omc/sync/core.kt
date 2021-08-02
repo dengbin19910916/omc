@@ -1,5 +1,6 @@
 package io.xxx.omni.omc.sync
 
+import com.alibaba.fastjson.JSON
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryWrapper
 import io.xxx.omni.omc.client.PlatformService
 import io.xxx.omni.omc.client.StoreService
@@ -22,6 +23,7 @@ import org.springframework.context.support.GenericApplicationContext
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory
 import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.kafka.core.ProducerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.scheduling.quartz.QuartzJobBean
 import org.springframework.stereotype.Component
@@ -169,7 +171,10 @@ abstract class Porter {
     protected lateinit var documentMapper: DocumentMapper
 
     @Autowired
-    protected lateinit var documentRetryMapper: DocumentRetryMapper
+    protected lateinit var retriedDocumentMapper: RetriedDocumentMapper
+
+    @Autowired
+    protected lateinit var kafkaOffsetMapper: KafkaOffsetMapper
 
     @Autowired
     protected lateinit var platformJobMapper: PlatformJobMapper
@@ -188,6 +193,9 @@ abstract class Porter {
 
     @Autowired
     protected lateinit var kafkaTemplate: KafkaTemplate<String, String>
+
+    @Autowired
+    protected lateinit var producerFactory: ProducerFactory<String, String>
 
     @Autowired
     protected lateinit var lbRestTemplate: RestTemplate
@@ -387,7 +395,26 @@ abstract class Porter {
         throw NotImplementedError()
 
     open fun sendMessages(documents: List<Document>) {
-
+        val store = storeJob.store!!
+        val platform = storeJob.store!!.platform!!
+        val topic = (platform.id + documentType.name).uppercase()
+        for (document in documents) {
+            val data = mutableMapOf<String, Any>(
+                "pid" to platform.id,
+                "sid" to store.id,
+                "sn" to document.sn!!,
+                "modified" to document.modified!!
+            )
+            val future = kafkaTemplate.send(topic, JSON.toJSONString(data))
+            future.addCallback({
+                val rm = it!!.recordMetadata
+                val kafkaOffset = KafkaOffset(rm.topic(), rm.partition(), rm.offset())
+                kafkaOffsetMapper.insert(kafkaOffset)
+            }, {
+                val documentRetry = RetriedDocument(document.id)
+                retriedDocumentMapper.insert(documentRetry)
+            })
+        }
     }
 
     /**

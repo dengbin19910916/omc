@@ -26,6 +26,7 @@ spring:
   kafka:
     producer:
       client-id: ${spring.application.name}
+      transaction-id-prefix: omc
       retries: 3
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer

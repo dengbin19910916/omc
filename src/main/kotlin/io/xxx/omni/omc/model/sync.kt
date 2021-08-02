@@ -83,7 +83,7 @@ enum class DocumentType {
 /**
  * 发送MQ失败等待重试的Document
  */
-data class DocumentRetry(
+data class RetriedDocument(
     @TableId(type = IdType.AUTO)
     var id: Long?,
     var did: Long?,
@@ -93,8 +93,23 @@ data class DocumentRetry(
     @Suppress("unused")
     constructor() : this(null, null, null, null)
 
-    constructor(did: Long?, retries: Int?, created: LocalDateTime?) : this(null, did, retries, created)
+    constructor(did: Long?) : this(null, did, 3, LocalDateTime.now())
 }
 
 @Mapper
-interface DocumentRetryMapper : BaseMapper<DocumentRetry>
+interface RetriedDocumentMapper : BaseMapper<RetriedDocument>
+
+data class KafkaOffset(
+    var id: Long?,
+    var topic: String?,
+    var partition: Int?,
+    var offset: Long?
+) {
+    @Suppress("unused")
+    constructor() : this(null, null, null, null)
+
+    constructor(topic: String, partition: Int, offset: Long) : this(null, topic, partition, offset)
+}
+
+@Mapper
+interface KafkaOffsetMapper : BaseMapper<KafkaOffset>

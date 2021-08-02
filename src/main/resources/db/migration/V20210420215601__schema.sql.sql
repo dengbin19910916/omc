@@ -17,7 +17,7 @@ comment on column document.sn is '关联单据编号';
 comment on column document.data is '单据信息';
 comment on column document.modified is '单据的更新时间，依赖这个时间更新数据';
 
-create table if not exists document_retry
+create table if not exists retried_document
 (
     id      bigserial primary key,
     did     bigint,
@@ -25,10 +25,10 @@ create table if not exists document_retry
     created timestamp
 );
 
-comment on table document_retry is 'Doc重试表，重试3次后将发送无法处理数据的异常';
-comment on column document_retry.did is 'Document ID';
-comment on column document_retry.retries is '重试次数';
-comment on column document_retry.created is '创建时间';
+comment on table retried_document is 'Doc重试表，重试3次后将发送无法处理数据的异常';
+comment on column retried_document.did is 'Document ID';
+comment on column retried_document.retries is '重试次数';
+comment on column retried_document.created is '创建时间';
 
 create table if not exists job
 (
@@ -90,3 +90,11 @@ comment on column akc_activity.begin_time is '活动开始时间';
 comment on column akc_activity.end_time is '活动结束时间';
 comment on column akc_activity.data is '活动详情';
 comment on column akc_activity.completed is '同步是否完成';
+
+create table if not exists kafka_offset
+(
+    id        serial primary key,
+    topic     varchar not null,
+    partition int     not null,
+    "offset"  bigint  not null
+)
