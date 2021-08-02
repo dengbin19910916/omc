@@ -12,4 +12,6 @@ create unique index uk_platform_job_pid_jid on platform_job (pid, jid);
 
 create index idx_store_job_sid_jid on store_job (sid, jid);
 
-create index idx_document_retry on document_retry (did, retries);
+create index idx_retried_document_did on retried_document (did);
+
+create index idx_kafka_offset_topic_partition on kafka_offset (topic, partition)
