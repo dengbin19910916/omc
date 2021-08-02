@@ -405,15 +405,18 @@ abstract class Porter {
                 "sn" to document.sn!!,
                 "modified" to document.modified!!
             )
-            val future = kafkaTemplate.send(topic, JSON.toJSONString(data))
-            future.addCallback({
-                val rm = it!!.recordMetadata
-                val kafkaOffset = KafkaOffset(rm.topic(), rm.partition(), rm.offset())
-                kafkaOffsetMapper.insert(kafkaOffset)
-            }, {
-                val documentRetry = RetriedDocument(document.id)
-                retriedDocumentMapper.insert(documentRetry)
-            })
+            kafkaTemplate.executeInTransaction {
+                val json = JSON.toJSONString(data)
+                val future = it.send(topic, json)
+                future.addCallback({ sr ->
+                    val rm = sr!!.recordMetadata
+                    val kafkaOffset = KafkaOffset(rm.topic(), rm.partition(), rm.offset())
+                    kafkaOffsetMapper.insert(kafkaOffset)
+                }, {
+                    val documentRetry = RetriedDocument(document.id)
+                    retriedDocumentMapper.insert(documentRetry)
+                })
+            }
         }
     }
 
