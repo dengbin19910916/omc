@@ -211,7 +211,8 @@ class JdRefundPorter : JdPorter() {
         pageNo: Long = 1,
     ): JSONObject {
         val response = getResponse(startTime, endTime, parameter, pageNo)
-        val result = response.getJSONObject("queryResult")
+        val result = response.getJSONObject("jingdong_pop_afs_soa_refundapply_queryPageList_responce")
+            .getJSONObject("queryResult")
         if (!result.getBoolean("success")) {
             throwException(method, response.toJSONString())
         }

@@ -12,7 +12,7 @@ alter sequence job_id_seq restart with 4;
 insert into platform_job(id, pid, jid, job_class, enabled)
 values (1, 'taobao', 1, 'io.xxx.omni.omc.sync.impl.TbTradePorter', true);
 insert into platform_job(id, pid, jid, job_class, enabled)
-values (2, 'taobao', 2, 'io.xxx.omni.omc.sync.impl.TbRefundPorter', true);
+values (2, 'taobao', 2, 'io.xxx.omni.omc.sync.impl.TbRefundPorter', false);
 
 insert into platform_job(id, pid, jid, job_class, enabled)
 values (3, 'jingdong', 1, 'io.xxx.omni.omc.sync.impl.JdTradePorter', true);

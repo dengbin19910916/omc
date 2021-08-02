@@ -15,8 +15,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.support.BeanDefinitionBuilder
-import org.springframework.boot.ApplicationArguments
-import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.ApplicationContext
 import org.springframework.context.support.GenericApplicationContext
@@ -28,6 +26,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.scheduling.quartz.QuartzJobBean
 import org.springframework.stereotype.Component
 import org.springframework.transaction.support.TransactionTemplate
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.text.DecimalFormat
 import java.time.Duration
@@ -39,7 +38,7 @@ import java.util.concurrent.Future
  * 一个门店对应一个任务，如果门店被禁用/启用则销毁/加载任务。
  */
 @Component
-class Synchronizer : ApplicationRunner {
+class Synchronizer {
 
     private val log: Logger = LoggerFactory.getLogger(javaClass)
 
@@ -64,69 +63,105 @@ class Synchronizer : ApplicationRunner {
     @Autowired
     private lateinit var scheduler: Scheduler
 
+    private val platformJobKeys = LinkedMultiValueMap<String/*pid*/, JobKey>()
+    private val platformJobJobKeys = LinkedMultiValueMap<Int/*pjid*/, JobKey>()
+    private val storeJobKeys = LinkedMultiValueMap<String/*sid*/, JobKey>()
+    private val storeJobJobKeys = HashMap<Int/*sjid*/, JobKey>()
+
     /**
      * 读取DB数据更新任务
      */
     @Scheduled(cron = "0/1 * * * * ?")
     fun flush() {
-//        val platformJobs = platformJobMapper.selectList(null)
-//        for (platformJob in platformJobs) {
-//            val simpleName = platformJob.jobClass!!.substringAfterLast(".")
-//            val beanName = simpleName.replaceFirstChar { it.lowercase() } + "Porter"
-//            val jobKey = JobKey(beanName, "SYNC")
-//            scheduler.interrupt(jobKey)
-//        }
-    }
-
-    override fun run(args: ApplicationArguments) {
-        fun getJob(storeJob: StoreJob): Triple<String, JobDetail, Trigger> {
-            val beanClass = Class.forName(storeJob.platformJob!!.jobClass!!)
-            val builder = BeanDefinitionBuilder.genericBeanDefinition(beanClass)
-                .addPropertyValue("storeJob", storeJob)
-            val beanDefinition = builder.beanDefinition
-            val beanName = "${beanClass.simpleName.replaceFirstChar { it.lowercase() }}${storeJob.sid}Porter"
-            (applicationContext as GenericApplicationContext).registerBeanDefinition(beanName, beanDefinition)
-            val porter = applicationContext.getBean(beanName, Porter::class.java)
-            val jobDetail = JobBuilder.newJob(ProxyJob::class.java)
-                .withIdentity("${beanName}Job", "SYNC")
-                .usingJobData(JobDataMap(mapOf("store" to storeJob.store, "porter" to porter)))
-                .build()
-            val trigger = TriggerBuilder.newTrigger()
-                .withIdentity("${beanName}Trigger", "SYNC")
-                .withSchedule(CronScheduleBuilder.cronSchedule(porter.cron))
-                .build()
-            return Triple(beanName, jobDetail, trigger)
-        }
-
-        // 根据已启用的店铺信息创建定时任务
-        val platforms = platformService.getAll()
-        for (platform in platforms) {
-            if (!platform.enabled) continue
-            val stores = storeService.getAll(platform.id)
-            for (store in stores) {
-                if (!store.enabled) continue
-                val pjWrapper = KtQueryWrapper(PlatformJob::class.java)
-                    .eq(PlatformJob::pid, platform.id)
-                val platformJobs = platformJobMapper.selectList(pjWrapper)
-                for (platformJob in platformJobs) {
-                    if (!platformJob.enabled!!) continue
-                    val job = jobMapper.selectById(platformJob.jid) ?: continue
-                    if (!job.enabled!!) continue
-                    val sjWrapper = KtQueryWrapper(StoreJob::class.java)
-                        .eq(StoreJob::sid, store.id)
-                        .eq(StoreJob::jid, platformJob.jid)
-                    val storeJob = storeJobMapper.selectOne(sjWrapper) ?: continue
-                    if (!storeJob.enabled!!) continue
-                    storeJob.job = job
-                    storeJob.store = store
-                    storeJob.platformJob = platformJob
-                    store.platform = platform
-                    val (beanName, jobDetail, trigger) = getJob(storeJob)
-                    scheduler.scheduleJob(jobDetail, trigger)
-                    log.info("${beanName}任务已注册")
-                }
+        fun removeJob(jobKey: JobKey?) {
+            if (jobKey == null) return
+            val result = scheduler.deleteJob(jobKey)
+            if (result && log.isInfoEnabled) {
+                log.warn("停止任务: ${jobKey.name}")
             }
         }
+
+        fun removeJobs(jobKeys: Collection<JobKey>?) {
+            jobKeys?.forEach {
+                removeJob(it)
+            }
+        }
+
+        val platforms = platformService.getAll()
+        for (platform in platforms) {
+            if (platform.enabled) {
+                val pqw = KtQueryWrapper(PlatformJob::class.java)
+                    .eq(PlatformJob::pid, platform.id)
+                val platformJobs = platformJobMapper.selectList(pqw)
+                for (platformJob in platformJobs) {
+                    if (platformJob.enabled!!) {
+                        val stores = storeService.getAll(platform.id)
+                        for (store in stores) {
+                            if (store.enabled) {
+                                val sqw = KtQueryWrapper(StoreJob::class.java)
+                                    .eq(StoreJob::sid, store.id)
+                                val storeJobs = storeJobMapper.selectList(sqw)
+                                for (storeJob in storeJobs) {
+                                    if (storeJob.enabled!!) {
+                                        addJob(platform, platformJob, store, storeJob)
+                                    } else {
+                                        val jobKey = storeJobJobKeys[storeJob.id]
+                                        removeJob(jobKey)
+                                    }
+                                }
+                            } else {
+                                val jobKeys = storeJobKeys[store.id]
+                                removeJobs(jobKeys)
+                            }
+                        }
+                    } else {
+                        val jobKeys = platformJobJobKeys[platformJob.id]
+                        removeJobs(jobKeys)
+                    }
+                }
+            } else {
+                val jobKeys = platformJobKeys[platform.id]
+                removeJobs(jobKeys)
+            }
+        }
+    }
+
+    @Synchronized
+    fun addJob(platform: Platform, platformJob: PlatformJob, store: Store, storeJob: StoreJob) {
+        val job = jobMapper.selectById(platformJob.jid) ?: return
+        storeJob.job = job
+        storeJob.store = store
+        storeJob.platformJob = platformJob
+        store.platform = platform
+        val (beanName, jobDetail, trigger) = getJob(storeJob)
+        val jobKey = jobDetail.key
+        if (!scheduler.checkExists(jobKey)) {
+            scheduler.scheduleJob(jobDetail, trigger)
+            platformJobKeys.add(platform.id, jobDetail.key)
+            platformJobJobKeys.add(platformJob.id!!, jobDetail.key)
+            storeJobKeys.add(store.id, jobDetail.key)
+            storeJobJobKeys[storeJob.id!!] = jobDetail.key
+            log.info("启动任务: $beanName")
+        }
+    }
+
+    private fun getJob(storeJob: StoreJob): Triple<String, JobDetail, Trigger> {
+        val beanClass = Class.forName(storeJob.platformJob!!.jobClass!!)
+        val builder = BeanDefinitionBuilder.genericBeanDefinition(beanClass)
+            .addPropertyValue("storeJob", storeJob)
+        val beanDefinition = builder.beanDefinition
+        val beanName = "${beanClass.simpleName.replaceFirstChar { it.lowercase() }}${storeJob.sid}Porter"
+        (applicationContext as GenericApplicationContext).registerBeanDefinition(beanName, beanDefinition)
+        val porter = applicationContext.getBean(beanName, Porter::class.java)
+        val jobDetail = JobBuilder.newJob(ProxyJob::class.java)
+            .withIdentity("${beanName}Job", "SYNC")
+            .usingJobData(JobDataMap(mapOf("store" to storeJob.store, "porter" to porter)))
+            .build()
+        val trigger = TriggerBuilder.newTrigger()
+            .withIdentity("${beanName}Trigger", "SYNC")
+            .withSchedule(CronScheduleBuilder.cronSchedule(porter.cron))
+            .build()
+        return Triple(beanName, jobDetail, trigger)
     }
 }
 
