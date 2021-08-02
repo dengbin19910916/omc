@@ -63,10 +63,10 @@ class Synchronizer {
     @Autowired
     private lateinit var scheduler: Scheduler
 
-    private val platformJobKeys = LinkedMultiValueMap<String/*pid*/, JobKey>()
-    private val platformJobJobKeys = LinkedMultiValueMap<Int/*pjid*/, JobKey>()
-    private val storeJobKeys = LinkedMultiValueMap<String/*sid*/, JobKey>()
-    private val storeJobJobKeys = HashMap<Int/*sjid*/, JobKey>()
+    private val platformJobKeys = LinkedMultiValueMap<String/*platform.id*/, JobKey>()
+    private val platformJobJobKeys = LinkedMultiValueMap<Int/*platformJob.id*/, JobKey>()
+    private val storeJobKeys = LinkedMultiValueMap<String/*store.id*/, JobKey>()
+    private val storeJobJobKeys = HashMap<Int/*storeJob.id*/, JobKey>()
 
     /**
      * 读取DB数据更新任务
