@@ -81,10 +81,30 @@ class Synchronizer {
             }
         }
 
+        fun removeJob(storeJob: StoreJob, jobKey: JobKey?) {
+            storeJobJobKeys.remove(storeJob.id)
+            removeJob(jobKey)
+        }
+
         fun removeJobs(jobKeys: Collection<JobKey>?) {
             jobKeys?.forEach {
                 removeJob(it)
             }
+        }
+
+        fun removeJobs(platform: Platform, jobKeys: Collection<JobKey>?) {
+            platformJobKeys.remove(platform.id)
+            removeJobs(jobKeys)
+        }
+
+        fun removeJobs(platformJob: PlatformJob, jobKeys: Collection<JobKey>?) {
+            platformJobJobKeys.remove(platformJob.id)
+            removeJobs(jobKeys)
+        }
+
+        fun removeJobs(store: Store, jobKeys: Collection<JobKey>?) {
+            storeJobKeys.remove(store.id)
+            removeJobs(jobKeys)
         }
 
         val platforms = platformService.getAll()
@@ -106,22 +126,22 @@ class Synchronizer {
                                         addJob(platform, platformJob, store, storeJob)
                                     } else {
                                         val jobKey = storeJobJobKeys[storeJob.id]
-                                        removeJob(jobKey)
+                                        removeJob(storeJob, jobKey)
                                     }
                                 }
                             } else {
                                 val jobKeys = storeJobKeys[store.id]
-                                removeJobs(jobKeys)
+                                removeJobs(store, jobKeys)
                             }
                         }
                     } else {
                         val jobKeys = platformJobJobKeys[platformJob.id]
-                        removeJobs(jobKeys)
+                        removeJobs(platformJob, jobKeys)
                     }
                 }
             } else {
                 val jobKeys = platformJobKeys[platform.id]
-                removeJobs(jobKeys)
+                removeJobs(platform, jobKeys)
             }
         }
     }

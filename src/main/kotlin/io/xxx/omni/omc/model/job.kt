@@ -27,6 +27,12 @@ data class Job(
 @Mapper
 interface JobMapper : BaseMapper<Job>
 
+enum class JobType {
+    SYNC,
+    TRANSLATE,
+    DOCUMENT_HOUSE_KEEPER
+}
+
 /**
  * 平台任务关系
  */
