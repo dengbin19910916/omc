@@ -399,6 +399,10 @@ abstract class Porter {
     open fun getData(startTime: LocalDateTime, endTime: LocalDateTime, parameter: Any?, pageNo: Long): List<Document>? =
         throw NotImplementedError()
 
+    /**
+     * 发送报文并当发送失败时记录报文重试日志
+     * @param documents 被更新的报文
+     */
     open fun sendMessages(documents: List<Document>) {
         val store = storeJob.store!!
         val platform = storeJob.store!!.platform!!
