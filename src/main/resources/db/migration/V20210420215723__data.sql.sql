@@ -10,14 +10,14 @@ alter sequence job_id_seq restart with 4;
 
 -- 平台任务关系
 insert into platform_job(id, pid, jid, job_class, enabled)
-values (1, 'taobao', 1, 'io.xxx.omni.oms.sync.impl.TbTradePorter', true);
+values (1, 'taobao', 1, 'io.xxx.omni.omc.sync.impl.TbTradePorter', true);
 insert into platform_job(id, pid, jid, job_class, enabled)
-values (2, 'taobao', 2, 'io.xxx.omni.oms.sync.impl.TbRefundPorter', true);
+values (2, 'taobao', 2, 'io.xxx.omni.omc.sync.impl.TbRefundPorter', true);
 
 insert into platform_job(id, pid, jid, job_class, enabled)
-values (3, 'jingdong', 1, 'io.xxx.omni.oms.sync.impl.JdTradePorter', true);
+values (3, 'jingdong', 1, 'io.xxx.omni.omc.sync.impl.JdTradePorter', true);
 insert into platform_job(id, pid, jid, job_class, enabled)
-values (4, 'jingdong', 2, 'io.xxx.omni.oms.sync.impl.JdRefundPorter', true);
+values (4, 'jingdong', 2, 'io.xxx.omni.omc.sync.impl.JdRefundPorter', true);
 
 alter sequence platform_job_id_seq restart with 5;
 

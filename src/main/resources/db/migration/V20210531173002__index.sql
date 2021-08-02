@@ -1,4 +1,6 @@
-create unique index uk_document_sid_sn on document (sid, sn);
+create unique index uk_document_sid_sn on document (sn, sid);
+
+create index idx_document_sid_sn on document (sn);
 
 create index idx_document_sid on document (id);
 

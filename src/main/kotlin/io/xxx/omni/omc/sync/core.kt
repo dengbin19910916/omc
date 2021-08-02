@@ -98,10 +98,10 @@ class Synchronizer : ApplicationRunner {
         // 根据已启用的店铺信息创建定时任务
         val platforms = platformService.getAll()
         for (platform in platforms) {
-            if (!platform.enabled!!) continue
-            val stores = storeService.getAll(platform.id!!)
+            if (!platform.enabled) continue
+            val stores = storeService.getAll(platform.id)
             for (store in stores) {
-                if (!store.enabled!!) continue
+                if (!store.enabled) continue
                 val pjWrapper = KtQueryWrapper(PlatformJob::class.java)
                     .eq(PlatformJob::pid, platform.id)
                 val platformJobs = platformJobMapper.selectList(pjWrapper)
@@ -278,11 +278,10 @@ abstract class Porter {
             } else {
                 val totalSeconds = Duration.between(startTime, endTime).abs().seconds
                 val indexes = totalSeconds / duration.seconds + if (totalSeconds % duration.seconds == 0L) 0 else 1
-                for (i in 0 until indexes) {
-                    val first = startTime.plusSeconds(duration.seconds * i)
-                    val second = if ((i + 1) == indexes) endTime
-                    else startTime.plusSeconds(duration.seconds * (i + 1))
-                    timeRanges.add(first to second)
+                for (i in 1..indexes) {
+                    val start = startTime.plusSeconds(duration.seconds * (i - 1))
+                    val end = if (i == indexes) endTime else startTime.plusSeconds(duration.seconds * i)
+                    timeRanges.add(start to end)
                 }
             }
             return timeRanges
