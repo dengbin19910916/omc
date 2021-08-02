@@ -27,6 +27,7 @@ import org.springframework.kafka.core.ProducerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.scheduling.quartz.QuartzJobBean
 import org.springframework.stereotype.Component
+import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.client.RestTemplate
 import java.text.DecimalFormat
 import java.time.Duration
@@ -198,7 +199,11 @@ abstract class Porter {
     protected lateinit var producerFactory: ProducerFactory<String, String>
 
     @Autowired
+    protected lateinit var translationTemplate: TransactionTemplate
+
+    @Autowired
     protected lateinit var lbRestTemplate: RestTemplate
+
 
     @Autowired
     private lateinit var restTemplateBuilder: RestTemplateBuilder
@@ -220,13 +225,13 @@ abstract class Porter {
     protected val store by lazy { storeJob.store!! }
 
     @Volatile
-    private var interruptted: Boolean = false
+    private var interrupted: Boolean = false
 
     /**
      * 中断任务
      */
     fun interrupt() {
-        this.interruptted = true
+        this.interrupted = true
     }
 
     /**
@@ -333,7 +338,7 @@ abstract class Porter {
         endTime: LocalDateTime,
         parameter: Any?
     ) {
-        if (interruptted) {
+        if (interrupted) {
             throw RuntimeException("任务中断")
         }
 
@@ -348,7 +353,7 @@ abstract class Porter {
         val futures = mutableListOf<Future<*>>()
         var pageNo = pages
         while (pageNo-- > 0) {
-            if (interruptted) {
+            if (interrupted) {
                 throw RuntimeException("任务中断")
             }
 
@@ -399,24 +404,23 @@ abstract class Porter {
         val platform = storeJob.store!!.platform!!
         val topic = (platform.id + documentType.name).uppercase()
         for (document in documents) {
-            val data = mutableMapOf<String, Any>(
+            val map = mapOf(
                 "pid" to platform.id,
                 "sid" to store.id,
                 "sn" to document.sn!!,
-                "modified" to document.modified!!
+                "modified" to document.modified!!.format(dateTimeFormatter)
             )
-            kafkaTemplate.executeInTransaction {
-                val json = JSON.toJSONString(data)
-                val future = it.send(topic, json)
-                future.addCallback({ sr ->
-                    val rm = sr!!.recordMetadata
-                    val kafkaOffset = KafkaOffset(rm.topic(), rm.partition(), rm.offset())
-                    kafkaOffsetMapper.insert(kafkaOffset)
-                }, {
-                    val documentRetry = RetriedDocument(document.id)
-                    retriedDocumentMapper.insert(documentRetry)
-                })
-            }
+            val data = JSON.toJSONString(map)
+            val future = kafkaTemplate.send(topic, data)
+            future.addCallback({
+                if (log.isDebugEnabled) {
+                    log.debug("消息[$data]发送成功")
+                }
+            }, { t ->
+                log.error("消息发送失败", t)
+                val documentRetry = RetriedDocument(document.id)
+                retriedDocumentMapper.insert(documentRetry)
+            })
         }
     }
 
