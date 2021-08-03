@@ -53,7 +53,7 @@ abstract class TbPorter : Porter() {
         pageNo: Long = 0,
         counted: Boolean = true,
     ): JSONObject {
-        val platform = omniProperties.getPlatform(store.pid!!) ?: throw RuntimeException("接口地址信息不存在")
+        val platform = omniProperties.getPlatform(store.pid) ?: throw RuntimeException("接口地址信息不存在")
         val url = UriComponentsBuilder.fromHttpUrl(platform.httpUrl!!)
             .path(path)
             .queryParam("sellerNick", store.oid)
