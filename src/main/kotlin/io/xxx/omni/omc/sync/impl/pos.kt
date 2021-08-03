@@ -2,6 +2,7 @@ package io.xxx.omni.omc.sync.impl
 
 import com.alibaba.fastjson.JSONObject
 import io.xxx.omni.omc.model.Document
+import io.xxx.omni.omc.model.DocumentType
 import io.xxx.omni.omc.sync.Porter
 import io.xxx.omni.omc.util.dateTimeFormatter
 import io.xxx.omni.omc.util.toLocalDateTime
@@ -16,6 +17,8 @@ import java.time.LocalDateTime
 class PosPorter : Porter() {
 
     private val httpUrl = "http://POS-SERVER/orders/data"
+
+    override val documentType = DocumentType.MIXED
 
     private fun getResponse(
         startTime: LocalDateTime,

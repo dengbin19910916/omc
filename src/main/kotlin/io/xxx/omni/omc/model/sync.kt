@@ -4,13 +4,9 @@ import com.alibaba.fastjson.JSONObject
 import com.baomidou.mybatisplus.annotation.IdType
 import com.baomidou.mybatisplus.annotation.TableId
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
-import io.xxx.omni.omc.util.gson
-import io.xxx.omni.omc.util.jsonb
 import org.apache.ibatis.annotations.Mapper
 import org.apache.ibatis.annotations.Options
 import org.apache.ibatis.annotations.Param
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.`java-time`.datetime
 import java.time.LocalDateTime
 
 /**
@@ -62,22 +58,40 @@ interface DocumentMapper : BaseMapper<Document> {
     fun upsertAll(@Param("list") documents: List<Document>): List<Document>
 }
 
-object DocumentTable : Table() {
-    val id = long("id")
-    val sid = varchar("sid", 50)
-    val sn = varchar("sn", 50)
-    val rsn = varchar("rsn", 50)
-    val data = jsonb("data", JSONObject::class.java, gson, true)
-    val modified = datetime("modified")
-    val pollCreated = datetime("poll_created")
-    val pollModified = datetime("poll_modified")
-}
+//object DocumentTable : Table() {
+//    val id = long("id")
+//    val sid = varchar("sid", 50)
+//    val sn = varchar("sn", 50)
+//    val rsn = varchar("rsn", 50)
+//    val data = jsonb("data", JSONObject::class.java, gson, true)
+//    val modified = datetime("modified")
+//    val pollCreated = datetime("poll_created")
+//    val pollModified = datetime("poll_modified")
+//}
 
 enum class DocumentType {
-    NONE,
-    TRADE,
-    REFUND,
-    MIXED
+    NONE {
+        override fun getDesc(): String {
+            return ""
+        }
+    },
+    TRADE {
+        override fun getDesc(): String {
+            return "订单"
+        }
+    },
+    REFUND {
+        override fun getDesc(): String {
+            return "退单"
+        }
+    },
+    MIXED {
+        override fun getDesc(): String {
+            return "订(退)单"
+        }
+    };
+
+    abstract fun getDesc(): String
 }
 
 /**

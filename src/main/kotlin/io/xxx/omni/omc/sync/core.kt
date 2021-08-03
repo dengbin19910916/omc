@@ -429,7 +429,7 @@ abstract class Porter {
     }
 
     private fun getLogPrefix(): String {
-        return "${store.platform!!.name}(${store.pid}) - ${store.name}(${store.id})"
+        return "${store.platform!!.name}(${store.pid}) - ${documentType.getDesc()} - ${store.name}(${store.id})"
     }
 
     /**
