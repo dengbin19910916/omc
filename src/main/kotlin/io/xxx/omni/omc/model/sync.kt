@@ -1,6 +1,5 @@
 package io.xxx.omni.omc.model
 
-import com.alibaba.fastjson.JSONObject
 import com.baomidou.mybatisplus.annotation.IdType
 import com.baomidou.mybatisplus.annotation.TableId
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
@@ -18,7 +17,7 @@ data class Document(
     var sid: String?,
     var sn: String?,
     var rsn: String?,
-    var data: JSONObject?,
+    var data: String?,
     var modified: LocalDateTime?,
     var pollCreated: LocalDateTime?,
     var pollModified: LocalDateTime?,
@@ -26,10 +25,10 @@ data class Document(
     @Suppress("unused")
     constructor() : this(null, null, null, null, null, null, null, null)
 
-    constructor(sn: String?, data: JSONObject?, modified: LocalDateTime?)
+    constructor(sn: String?, data: String?, modified: LocalDateTime?)
             : this(null, null, sn, null, data, modified, null, null)
 
-    constructor(sn: String?, rsn: String?, data: JSONObject?, modified: LocalDateTime?)
+    constructor(sn: String?, rsn: String?, data: String?, modified: LocalDateTime?)
             : this(null, null, sn, rsn, data, modified, null, null)
 
     override fun equals(other: Any?): Boolean {
@@ -113,17 +112,17 @@ data class RetriedDocument(
 @Mapper
 interface RetriedDocumentMapper : BaseMapper<RetriedDocument>
 
-data class KafkaOffset(
+data class CommittedOffset(
     var id: Long?,
     var topic: String?,
     var partition: Int?,
-    var offset: Long?
+    var value: Long?
 ) {
     @Suppress("unused")
     constructor() : this(null, null, null, null)
 
-    constructor(topic: String, partition: Int, offset: Long) : this(null, topic, partition, offset)
+    constructor(topic: String, partition: Int, value: Long) : this(null, topic, partition, value)
 }
 
 @Mapper
-interface KafkaOffsetMapper : BaseMapper<KafkaOffset>
+interface CommittedOffsetMapper : BaseMapper<CommittedOffset>

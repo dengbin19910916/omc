@@ -88,7 +88,7 @@ open class HzwTradePorter : HzwPorter() {
     override fun buildDocument(value: JSONObject): Document {
         return Document(
             value.getString("dealCode"),
-            value,
+            value.toJSONString(),
             value.getLong("LastUpdateTime").toLocalDateTime()
         )
     }
@@ -113,7 +113,7 @@ open class HzwRefundPorter : HzwPorter() {
         return Document(
             value.getString("dealCode"),
             value.getString("dealCode"),
-            value,
+            value.toJSONString(),
             value.getString("update_time").toLocalDateTime()
         )
     }

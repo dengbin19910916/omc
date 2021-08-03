@@ -81,7 +81,8 @@ class TbTradePorter : TbPorter() {
             jsonObject.getString("tid"),
             jsonObject.getJSONObject("jdp_response")
                 .getJSONObject("trade_fullinfo_get_response")
-                .getJSONObject("trade"),
+                .getJSONObject("trade")
+                .toJSONString(),
             LocalDateTime.parse(jsonObject.getString("jdp_modified"))
         )
     }
@@ -101,7 +102,8 @@ class TbRefundPorter : TbPorter() {
             jsonObject.getString("tid"),
             jsonObject.getJSONObject("jdp_response")
                 .getJSONObject("refund_get_response")
-                .getJSONObject("refund"),
+                .getJSONObject("refund")
+                .toJSONString(),
             LocalDateTime.parse(jsonObject.getString("jdp_modified"))
         )
     }

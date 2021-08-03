@@ -99,7 +99,7 @@ open class BbTradePorter : BbPorter() {
     override fun buildDocument(value: JSONObject): Document {
         return Document(
             value.getString("oid"),
-            value,
+            value.toJSONString(),
             value.getString("modified_time").toLocalDateTime()
         )
     }
@@ -125,7 +125,7 @@ class BbRefundPorter : BbPorter() {
         return Document(
             value.getString("id"),
             value.getString("oid"),
-            value,
+            value.toJSONString(),
             value.getString("modified_time").toLocalDateTime()
         )
     }

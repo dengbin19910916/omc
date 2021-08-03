@@ -83,7 +83,7 @@ class XhsTradePorter : XhsPorter() {
                 val value = JSONObject(it as Map<String, Any>)
                 Document(
                     value.getString("package_id"),
-                    value,
+                    value.toJSONString(),
                     value.getLong("time").toLocalDateTime()
                 )
             }
@@ -129,7 +129,7 @@ class XhsRefundPorter : XhsPorter() {
                 Document(
                     value.getString("returns_id"),
                     value.getString("package_id"),
-                    value,
+                    value.toJSONString(),
                     value.getLong("time").toLocalDateTime()
                 )
             }

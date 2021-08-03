@@ -109,7 +109,7 @@ open class YjTradePorter : YjPorter() {
             val value = JSONObject(it as Map<String, Any>)
             Document(
                 value.getString("order_id"),
-                value,
+                value.toJSONString(),
                 value.getLong("modify_time").toLocalDateTime()
             )
         }
@@ -152,7 +152,7 @@ open class YjRefundPorter : YjPorter() {
             Document(
                 value.getString("refund_id"),
                 value.getString("order_id"),
-                value,
+                value.toJSONString(),
                 value.getLong("modify_time").toLocalDateTime()
             )
         }

@@ -14,4 +14,4 @@ create index idx_store_job_sid_jid on store_job (sid, jid);
 
 create index idx_retried_document_did on retried_document (did);
 
-create index idx_kafka_offset_topic_partition on kafka_offset (topic, partition)
+create index idx_committed_offset_topic_partition on committed_offset (topic, partition)

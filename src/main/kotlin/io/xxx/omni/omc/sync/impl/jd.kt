@@ -104,7 +104,7 @@ class JdTradePorter : JdPorter() {
             val value = JSONObject(it as Map<String, Any>)
             Document(
                 value.getString("orderId"),
-                value,
+                value.toJSONString(),
                 value.getString("modified").toLocalDateTime()
             )
         }
@@ -198,7 +198,7 @@ class JdRefundPorter : JdPorter() {
             Document(
                 value.getString("id"),
                 value.getString("orderId"),
-                value,
+                value.toJSONString(),
                 value.getString("checkTime").toLocalDateTime() ?: value.getString("applyTime").toLocalDateTime()
             )
         }

@@ -34,6 +34,9 @@ spring:
       group-id: ${spring.application.name}
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+    listener:
+      ack-mode: manual
   cloud:
     consul:
       discovery:
@@ -64,8 +67,8 @@ spring:
     bootstrap-servers: localhost:9092
 omni:
   platforms:
-  - code: taobao
-    http-url: http://39.103.196.31:30000/tb
+    - code: taobao
+      http-url: http://39.103.196.31:30000/tb
 ---
 spring:
   config:
@@ -87,8 +90,8 @@ spring:
     bootstrap-servers: 192.168.206.91:9092,192.168.206.92:9092,192.168.206.93:9092
 omni:
   platforms:
-  - code: taobao
-    http-url: http://39.103.196.31:30000/tb
+    - code: taobao
+      http-url: http://39.103.196.31:30000/tb
 ---
 spring:
   config:
@@ -102,3 +105,11 @@ logging:
       clean-history-on-start: true
   pattern:
     file: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+---
+spring:
+  config:
+    activate:
+      on-profile: log-level
+logging:
+  level:
+    io.xxx.omni.omc.model.DocumentMapper: debug

@@ -230,7 +230,7 @@ abstract class Porter {
     protected lateinit var retriedDocumentMapper: RetriedDocumentMapper
 
     @Autowired
-    protected lateinit var kafkaOffsetMapper: KafkaOffsetMapper
+    protected lateinit var committedOffsetMapper: CommittedOffsetMapper
 
     @Autowired
     protected lateinit var platformJobMapper: PlatformJobMapper

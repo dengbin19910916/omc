@@ -110,7 +110,7 @@ open class DyTradePorter : DyPorter() {
     override fun buildDocument(value: JSONObject): Document {
         return Document(
             value.getString("order_id"),
-            value,
+            value.toJSONString(),
             value.getString("update_time").toLocalDateTime()
         )
     }
@@ -136,7 +136,7 @@ open class DyRefundPorter : DyPorter() {
         return Document(
             value.getString("aftersale_id"),
             value.getString("order_id"),
-            value,
+            value.toJSONString(),
             value.getString("update_time").toLocalDateTime()
         )
     }

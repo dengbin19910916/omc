@@ -122,7 +122,7 @@ class AkcTradePorter : AkcPorter() {
             @Suppress("unchecked_cast")
             val value = JSONObject(it as Map<String, Any>)
             val modified = (value.getString("paytime") ?: value.getString("ordertime")).toLocalDateTime()
-            Document(value.getString("adorderid"), value, modified)
+            Document(value.getString("adorderid"), value.toJSONString(), modified)
         }
     }
 

@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.IdType
 import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableId
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
-import io.xxx.omni.omc.util.JSONTypeHandler
 import io.xxx.omni.omc.util.toLocalDateTime
 import org.apache.ibatis.annotations.Mapper
 import org.springframework.stereotype.Repository
@@ -43,8 +42,7 @@ data class PlatformJob(
     var jid: Int?,
     var jobClass: String?,
     var enabled: Boolean?,
-    @TableField(typeHandler = JSONTypeHandler::class)
-    var props: JSONObject?,
+    var props: String?,
     @TableField(exist = false)
     var platform: Platform?,
     @TableField(exist = false)
@@ -72,7 +70,6 @@ data class StoreJob(
      */
     var endTime: LocalDateTime?,
     var enabled: Boolean?,
-    @TableField(typeHandler = JSONTypeHandler::class)
     var props: String?,
     @TableField(exist = false)
     var store: Store?,
@@ -99,7 +96,6 @@ data class AkcActivity(
     var beginTime: LocalDateTime?,
     var endTime: LocalDateTime?,
     var completed: Boolean?,
-    @TableField(typeHandler = JSONTypeHandler::class)
     var data: JSONObject?
 ) {
     @Suppress("unused")

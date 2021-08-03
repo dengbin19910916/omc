@@ -114,7 +114,7 @@ class TxHjTradePorter : TxHjPorter() {
                 value["deliverNumber"] = decrypt(value.getString("deliverNumber"), dataKey)
                 value["deliverCompany"] = decrypt(value.getString("deliverCompany"), dataKey)
                 val sn = value.getString("orderId")
-                Document(sn, value, value.getLong("updateTime").toLocalDateTime())
+                Document(sn, value.toJSONString(), value.getLong("updateTime").toLocalDateTime())
             }
     }
 
@@ -178,7 +178,7 @@ class TxHjRefundPorter : TxHjPorter() {
                 val value = JSONObject(it as Map<String, Any>)
                 val sn = value.getString("afterSaleOrderId")
                 val rsn = value.getString("orderId")
-                Document(sn, rsn, value, value.getLong("updateTime").toLocalDateTime())
+                Document(sn, rsn, value.toJSONString(), value.getLong("updateTime").toLocalDateTime())
             }
     }
 

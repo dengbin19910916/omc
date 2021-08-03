@@ -71,29 +71,27 @@ fun Any.toJSONObject(): JSONObject {
     return JSON.parseObject(JSON.toJSONString(this))
 }
 
-@Suppress("unused")
-@MappedTypes(JSONObject::class)
-class JSONTypeHandler : BaseTypeHandler<JSONObject?>() {
+@MappedTypes(Any::class)
+class JsonbTypeHandler : BaseTypeHandler<Any>() {
 
-    override fun setNonNullParameter(ps: PreparedStatement?, i: Int, parameter: JSONObject?, jdbcType: JdbcType?) {
-        val jsonObject = PGobject()
+    private val jsonObject = PGobject()
+
+    override fun setNonNullParameter(ps: PreparedStatement, i: Int, parameter: Any, jdbcType: JdbcType?) {
         jsonObject.type = "jsonb"
-        jsonObject.value = parameter?.toJSONString()
-        ps?.setObject(i, jsonObject)
+        jsonObject.value = parameter.toString()
+        ps.setObject(i, jsonObject)
     }
 
-    override fun getNullableResult(rs: ResultSet?, columnName: String?): JSONObject? {
-        val data = rs?.getString(columnName)
-        return if (data == null) JSON.parseObject(data) else null
+    override fun getNullableResult(rs: ResultSet, columnName: String): Any {
+        return rs.getObject(columnName);
     }
 
-    override fun getNullableResult(rs: ResultSet?, columnIndex: Int): JSONObject? {
-        val data = rs?.getString(columnIndex)
-        return if (data == null) JSON.parseObject(data) else null
+    override fun getNullableResult(rs: ResultSet, columnIndex: Int): Any {
+        return rs.getObject(columnIndex);
     }
 
-    override fun getNullableResult(cs: CallableStatement?, columnIndex: Int): JSONObject? {
-        val data = cs?.getString(columnIndex)
-        return if (data == null) JSON.parseObject(data) else null
+    override fun getNullableResult(cs: CallableStatement, columnIndex: Int): Any {
+        return cs.getObject(columnIndex)
     }
+
 }

@@ -5,7 +5,7 @@
     <select id="upsertAll" parameterType="list" resultType="io.xxx.omni.omc.model.Document">
         insert into document(sid, sn, rsn, data, modified, poll_created, poll_modified) values
         <foreach collection="list" item="it" separator=",">
-            (#{it.sid}, #{it.sn}, #{it.rsn}, #{it.data,typeHandler=io.xxx.omni.omc.util.JSONTypeHandler},
+            (#{it.sid}, #{it.sn}, #{it.rsn}, #{it.data,typeHandler=io.xxx.omni.omc.util.JsonbTypeHandler},
             #{it.modified}, current_timestamp, current_timestamp)
         </foreach>
         on conflict (sid, sn) do update

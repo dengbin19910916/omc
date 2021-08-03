@@ -56,7 +56,7 @@ class PosPorter : Porter() {
             Document(
                 value.getString("id"),
                 value.getString("original_order_id"),
-                value,
+                value.toJSONString(),
                 value.getString("updated_time").toLocalDateTime()
             )
         }

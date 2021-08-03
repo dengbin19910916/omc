@@ -75,7 +75,7 @@ class DxYsTradePorter : DxYsPorter() {
             val value = JSONObject(it as Map<String, Any>)
             Document(
                 value.getString("PlatOrderNo"),
-                value,
+                value.toJSONString(),
                 value.getString("tradetime").toLocalDateTime()
             )
         }

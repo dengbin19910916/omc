@@ -88,7 +88,7 @@ open class BbsTradePorter : BbsPagePorter() {
             @Suppress("unchecked_cast")
             val value = JSONObject(it as Map<String, Any>)
             val modified = value.getLong("payTime").toLocalDateTime() ?: value.getLong("createTime").toLocalDateTime()
-            Document(value.getString("code"), value, modified)
+            Document(value.getString("code"), value.toJSONString(), modified)
         }
     }
 

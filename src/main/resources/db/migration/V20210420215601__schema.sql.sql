@@ -91,10 +91,15 @@ comment on column akc_activity.end_time is '活动结束时间';
 comment on column akc_activity.data is '活动详情';
 comment on column akc_activity.completed is '同步是否完成';
 
-create table if not exists kafka_offset
+create table if not exists committed_offset
 (
-    id        serial primary key,
+    id        bigserial primary key,
     topic     varchar not null,
     partition int     not null,
-    "offset"  bigint  not null
-)
+    value     bigint  not null
+);
+
+comment on table committed_offset is 'kafka已经提交的offset';
+comment on column committed_offset.topic is '主题';
+comment on column committed_offset.partition is '分区';
+comment on column committed_offset.value is '已经提交的offset';

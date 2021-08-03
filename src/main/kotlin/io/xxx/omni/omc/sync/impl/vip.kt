@@ -95,7 +95,7 @@ open class VipTradePorter : VipPorter() {
             val value = JSONObject(it as Map<String, Any>)
             Document(
                 value.getString("order_id"),
-                value,
+                value.toJSONString(),
                 value.getString("last_update_time").toLocalDateTime()
             )
         }
@@ -145,7 +145,7 @@ open class VipRefundPorter : VipPorter() {
             Document(
                 value.getString("apply_sn"),
                 value.getString("order_id"),
-                value,
+                value.toJSONString(),
                 value.getString("last_update_time").toLocalDateTime()
             )
         }

@@ -106,8 +106,7 @@ class KsTradePorter : KsPorter() {
                 @Suppress("unchecked_cast")
                 val value = JSONObject(it as Map<String, Any>)
                 val modified = value.getLong("updateTime").toLocalDateTime()
-                Document(value.getString("oid"), value, modified)
-                Document()
+                Document(value.getString("oid"), value.toJSONString(), modified)
             }
         return documents to data.getString("pcursor")
     }
@@ -139,8 +138,7 @@ class KsRefundPorter : KsPorter() {
                 @Suppress("unchecked_cast")
                 val value = JSONObject(it as Map<String, Any>)
                 val modified = value.getLong("updateTime").toLocalDateTime()
-                Document(value.getString("refundId"), value.getString("oid"), value, modified)
-                Document()
+                Document(value.getString("refundId"), value.getString("oid"), value.toJSONString(), modified)
             }
         return documents to data.getString("pcursor")
     }

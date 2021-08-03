@@ -97,7 +97,7 @@ class PddTradePorter : PddPorter() {
                 val value = JSONObject(it as Map<String, Any>)
                 Document(
                     value.getString("order_sn"),
-                    value,
+                    value.toJSONString(),
                     value.getLong("updated_at").toLocalDateTime()
                 )
             }
@@ -156,7 +156,7 @@ class PddRefundPorter : PddPorter() {
                 Document(
                     value.getString("id"),
                     value.getString("order_sn"),
-                    value,
+                    value.toJSONString(),
                     value.getLong("updated_time").toLocalDateTime()
                 )
             }
