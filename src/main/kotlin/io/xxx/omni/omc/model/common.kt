@@ -6,27 +6,27 @@ import java.time.LocalDateTime
  * 平台
  */
 data class Platform(
-    var id: String,
-    var name: String,
-    var enabled: Boolean,
+    val id: String,
+    val name: String,
+    val enabled: Boolean,
 )
 
 /**
  * 店铺
  */
 data class Store(
-    var id: String,
-    var pid: String,
+    val id: String,
+    val pid: String,
     /**
      * 平台商家id
      */
-    var oid: String?,
-    var name: String,
-    var enabled: Boolean,
-    var appKey: String?,
-    var appSecret: String?,
-    var accessToken: String?,
-    var created: LocalDateTime,
+    val oid: String?,
+    val name: String,
+    val enabled: Boolean,
+    val appKey: String?,
+    val appSecret: String?,
+    val accessToken: String?,
+    val created: LocalDateTime,
 
     var platform: Platform?,
 )
