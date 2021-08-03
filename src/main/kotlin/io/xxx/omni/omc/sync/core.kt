@@ -461,7 +461,7 @@ abstract class Porter {
     open fun sendMessages(documents: List<Document>) {
         val store = storeJob.store!!
         val platform = storeJob.store!!.platform!!
-        val topic = (platform.id + documentType.name).uppercase()
+        val topic = "${platform.id}_${documentType.name}".uppercase()
         for (document in documents) {
             val map = mapOf(
                 "pid" to platform.id,
@@ -473,7 +473,7 @@ abstract class Porter {
             val future = kafkaTemplate.send(topic, data)
             future.addCallback({
                 if (log.isDebugEnabled) {
-                    log.debug("消息[$data]发送成功")
+                    log.debug("$topic: 消息[$data]发送成功")
                 }
             }, { t ->
                 log.error("消息发送失败", t)

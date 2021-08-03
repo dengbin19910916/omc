@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
  * 将退单信息转换为退货信息。
  */
 @Component
-@KafkaListener(topics = ["TAOBAO-TRADE"])
+@KafkaListener(topics = ["TAOBAO_TRADE"])
 class TbTranslator {
 
     @KafkaHandler
