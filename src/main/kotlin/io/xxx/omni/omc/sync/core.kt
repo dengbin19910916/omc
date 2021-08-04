@@ -292,7 +292,7 @@ abstract class Porter {
     /**
      * 计划任务
      */
-    open val cron = "0/1 * * * * ?"
+    open val cron = "0/5 * * * * ?"
 
     /**
      * 限制开始时间和结束时间的时间范围不超过平台的限制

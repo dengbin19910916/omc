@@ -88,6 +88,8 @@ spring:
     database: 1
   kafka:
     bootstrap-servers: 192.168.206.91:9092,192.168.206.92:9092,192.168.206.93:9092
+    listener:
+      concurrency: 12
 omni:
   platforms:
     - code: taobao
