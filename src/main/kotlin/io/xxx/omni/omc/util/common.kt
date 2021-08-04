@@ -70,28 +70,3 @@ fun Any.toJSONString(): String {
 fun Any.toJSONObject(): JSONObject {
     return JSON.parseObject(JSON.toJSONString(this))
 }
-
-@MappedTypes(Any::class)
-class JsonbTypeHandler : BaseTypeHandler<Any>() {
-
-    private val jsonObject = PGobject()
-
-    override fun setNonNullParameter(ps: PreparedStatement, i: Int, parameter: Any, jdbcType: JdbcType?) {
-        jsonObject.type = "jsonb"
-        jsonObject.value = parameter.toString()
-        ps.setObject(i, jsonObject)
-    }
-
-    override fun getNullableResult(rs: ResultSet, columnName: String): Any {
-        return rs.getObject(columnName);
-    }
-
-    override fun getNullableResult(rs: ResultSet, columnIndex: Int): Any {
-        return rs.getObject(columnIndex);
-    }
-
-    override fun getNullableResult(cs: CallableStatement, columnIndex: Int): Any {
-        return cs.getObject(columnIndex)
-    }
-
-}

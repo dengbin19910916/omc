@@ -14,4 +14,10 @@ create index idx_store_job_sid_jid on store_job (sid, jid);
 
 create index idx_retried_document_did on retried_document (did);
 
-create index idx_committed_offset_topic_partition on committed_offset (topic, partition)
+create index idx_committed_offset_topic_partition on committed_offset (topic, partition);
+
+create index idx_delivery_sn_sid on delivery (sn, sid);
+
+create index idx_delivery_item_sn_sid on delivery_item (did);
+
+create index idx_delivery_modified on delivery (modified);

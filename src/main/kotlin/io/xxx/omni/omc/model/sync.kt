@@ -113,6 +113,7 @@ data class RetriedDocument(
 interface RetriedDocumentMapper : BaseMapper<RetriedDocument>
 
 data class CommittedOffset(
+    @TableId(type = IdType.AUTO)
     var id: Long?,
     var topic: String?,
     var partition: Int?,

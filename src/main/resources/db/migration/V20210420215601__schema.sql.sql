@@ -103,3 +103,42 @@ comment on table committed_offset is 'kafka已经提交的offset';
 comment on column committed_offset.topic is '主题';
 comment on column committed_offset.partition is '分区';
 comment on column committed_offset.value is '已经提交的offset';
+
+create table if not exists delivery
+(
+    id                bigserial primary key,
+    sid               varchar not null,
+    sn                varchar not null,
+    receiver_name     varchar not null,
+    receiver_phone    varchar not null,
+    receiver_state    varchar,
+    receiver_city     varchar,
+    receiver_district varchar,
+    receiver_address  varchar,
+    created           timestamp,
+    modified          timestamp
+);
+
+comment on table delivery is '发货信息';
+comment on column delivery.sid is '门店编码';
+comment on column delivery.sn is '单号';
+comment on column delivery.receiver_name is '收货人姓名';
+comment on column delivery.receiver_phone is '收货人手机';
+comment on column delivery.receiver_state is '收货人省份';
+comment on column delivery.receiver_city is '收货人城市';
+comment on column delivery.receiver_district is '收货人地区';
+comment on column delivery.receiver_address is '收货人详细地址';
+
+create table if not exists delivery_item
+(
+    id       bigserial primary key,
+    did      bigint  not null,
+    sku_id   varchar not null,
+    num      int     not null,
+    title    varchar
+);
+
+comment on table delivery_item is '发货信息明细';
+comment on column delivery_item.sku_id is 'SKU编码';
+comment on column delivery_item.num is '数量';
+comment on column delivery_item.title is '商品名称';

@@ -1,8 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
 plugins {
     id("org.springframework.boot") version "2.4.9"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("io.ebean") version "12.10.0"
     kotlin("jvm") version "1.5.21"
     kotlin("plugin.spring") version "1.5.21"
     kotlin("kapt") version "1.5.21"
@@ -37,6 +39,7 @@ val guavaVersion = "30.1.1-jre"
 val mybatisPlusVersion = "3.4.3.1"
 val sqltoyVersion = "5.0.7"
 val yitterVersion = "1.0.6"
+val ebeanVersion = "12.10.0"
 
 dependencies {
     implementation("com.github.yitter:yitter-idgenerator:$yitterVersion")
@@ -46,6 +49,9 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-spring-boot-starter:$exposedVersion")
     implementation("com.alibaba:fastjson:$fastjsonVersion")
     implementation("com.google.guava:guava:$guavaVersion")
+    implementation("io.ebean:ebean:$ebeanVersion")
+    annotationProcessor("io.ebean:querybean-generator:$ebeanVersion")
+    testImplementation("io.ebean:ebean-test:$ebeanVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
     implementation("org.jolokia:jolokia-core")
