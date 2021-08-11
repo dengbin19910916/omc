@@ -50,11 +50,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    implementation("org.springframework.boot:spring-boot-starter-hateoas")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-quartz")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-web") {
+        exclude("org.springframework.boot", "spring-boot-starter-tomcat")
+    }
+    implementation("org.springframework.boot:spring-boot-starter-jetty")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("de.codecentric:spring-boot-admin-starter-client")
     implementation("org.flywaydb:flyway-core")
