@@ -117,6 +117,9 @@ class JdTradePorter : JdPorter() {
         pageNo: Long = 1,
     ): JSONObject {
         val response = getResponse(startTime, endTime, parameter, pageNo)
+        if (response.containsKey("error_response")) {
+            throwException(method, response.toJSONString())
+        }
         val result = response.getJSONObject("jingdong_pop_order_search_responce")
             .getJSONObject("searchorderinfo_result")
         val apiResult = result.getJSONObject("apiResult")
